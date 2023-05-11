@@ -13,6 +13,9 @@ lazy val root = project
     maintainer := "Ryan Deschamps <rdeschamps@conestogac.on.ca",
     organization := "com.greebiestudios",
     description := "A project for creating test server data",
+    dockerExposedPorts := Seq(8099),
+    dockerUpdateLatest := true,
+    packageName in Docker := "ryandeschamps/test-compile",
     
 
     scalaVersion := scala3Version,
@@ -35,3 +38,5 @@ lazy val root = project
   )
 
   enablePlugins(JavaServerAppPackaging)
+  enablePlugins(DockerPlugin)
+

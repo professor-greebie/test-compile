@@ -43,10 +43,12 @@ object Routing
 
   def getGaussian(
       mean: Double,
-      std: Double
+      std: Double, 
+      seed: scala.Option[Int] = None
   ): Source[NumberValue, Cancellable] = {
     val generator: Generator[Double] =
       GeneratorImpl(mean, std, 10, gen = GeneratorType.Gaussian)
+    generator.seed = seed
     val gaussian: Source[NumberValue, Cancellable] = Source
       .tick[NumberValue](
         250.millis,
@@ -59,7 +61,8 @@ object Routing
 
   def getGaussianInt(
       mean: Long,
-      std: Long
+      std: Long,
+      seed: Option[Int] = None
   ): Source[NumberValue, Cancellable] = {
     val generatorLong: Generator[Long] = GeneratorLong(
       GeneratorImpl(
@@ -69,6 +72,7 @@ object Routing
         gen = GeneratorType.Gaussian
       )
     )
+    generatorLong.seed = seed
     val gaussian: Source[NumberValue, Cancellable] = Source
       .tick[NumberValue](
         250.millis,
@@ -91,20 +95,22 @@ object Routing
 
     lazy val route: Route = concat (
       path("api" / "gaussian" / "whole" / LongNumber / LongNumber){ (mean, std) =>
+        parameter("seed".optional) { seed => 
           get 
             complete(
-              getGaussianInt(mean, std)
+              getGaussianInt(mean, std, seed.map(i => i.toInt))
             )
-        },
+        }},
       path("api" / "gaussian" / "real" / LongNumber / LongNumber) { (mean, std) =>
+        parameter("seed".optional) { seed => 
           get
             complete(
-              getGaussian(mean, std)
+              getGaussian(mean, std, seed.map(i => i.toInt))
             )
-      }
+      }}
       )
 
-    val bindingFuture = Http().newServerAt("localhost", 8099).bind(route)
+    val bindingFuture = Http().newServerAt("0.0.0.0", 8099).bind(route)
     println(
       s"Server now online. Please navigate to http://localhost:8099/hello\nPress RETURN to stop..."
     )

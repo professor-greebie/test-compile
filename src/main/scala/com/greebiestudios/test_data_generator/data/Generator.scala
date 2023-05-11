@@ -8,6 +8,7 @@ import org.apache.commons.math3.random.RandomGenerator
 import org.apache.commons.math3.random.RandomGeneratorFactory
 
 trait Generator[T]:
+  var seed: Option[Int]
   def generate(): T
 
 enum GeneratorType:
@@ -20,6 +21,12 @@ class GeneratorImpl(
     val degreesOfFreedom: scala.Int = 10,
     val gen: GeneratorType = GeneratorType.RandomDouble
 ) extends Generator[Double]:
+  
+  private var _seed: scala.Option[Int] = None
+
+  def seed: Option[Int] = _seed
+  def seed_= (nval: scala.Option[Int]): Unit = _seed = nval
+
   def result = gen match
     case GeneratorType.Gaussian     => createGaussianWithMeanAndStd(mean, std)
     case GeneratorType.RandomDouble => createDouble()
@@ -31,8 +38,11 @@ class GeneratorImpl(
   def this(gen: GeneratorType) =
     this(0.0, 0.0)
 
-  val rand: java.util.Random = java.util.Random()
-  val random:  RandomGenerator = RandomGeneratorFactory.createRandomGenerator(rand)
+  def rand: java.util.Random = _seed match {
+    case Some(seedVal) => java.util.Random(seedVal)
+    case None => java.util.Random()
+  }
+  lazy val random:  RandomGenerator = RandomGeneratorFactory.createRandomGenerator(rand)
 
   def createDouble(): Double = random.nextDouble()
 
@@ -61,6 +71,9 @@ end GeneratorImpl
 class GeneratorLong(
     val generator: GeneratorImpl
 ) extends Generator[Long] {
+
+  def seed: Option[Int] = generator.seed
+  def seed_= (nval: scala.Option[Int]): Unit = generator.seed = nval
 
   def createInt(): Int = generator.random.nextInt()
 
