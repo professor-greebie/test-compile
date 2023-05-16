@@ -39,54 +39,13 @@ object Routing
   implicit val jsonStreamingSupport: JsonEntityStreamingSupport =
     EntityStreamingSupport.json().withFramingRenderer(Flow[ByteString].map(byteString => byteString ++ newLine))
 
-  
-
-  def getGaussian(
-      mean: Double,
-      std: Double, 
-      seed: scala.Option[Int] = None
-  ): Source[NumberValue, Cancellable] = {
-    val generator: Generator[Double] =
-      GeneratorImpl(mean, std, 10, gen = GeneratorType.Gaussian)
-    generator.seed = seed
-    val gaussian: Source[NumberValue, Cancellable] = Source
-      .tick[NumberValue](
-        250.millis,
-        500.millis,
-        NumberValue(mean))
-      .map(_ => NumberValue(generator.generate())) 
-      .named("Gaussian")
-    gaussian
-  }
-
-  def getGaussianInt(
-      mean: Long,
-      std: Long,
-      seed: Option[Int] = None
-  ): Source[NumberValue, Cancellable] = {
-    val generatorLong: Generator[Long] = GeneratorLong(
-      GeneratorImpl(
-        mean.toDouble,
-        std.toDouble,
-        10,
-        gen = GeneratorType.Gaussian
-      )
-    )
-    generatorLong.seed = seed
-    val gaussian: Source[NumberValue, Cancellable] = Source
-      .tick[NumberValue](
-        250.millis,
-        500.millis,
-        NumberValue(generatorLong.generate())
-      ).map(_ => NumberValue(generatorLong.generate()))
-      .named("Gaussian Long")
-    gaussian
-  }
+  val valueStreams = ValueStreams
 
   def apply(): Unit = {
     implicit val numberValueFormat: RootJsonFormat[NumberValue] = jsonFormat1(
       NumberValue.apply
     )
+
     implicit val system: ActorSystem[Any] =
       ActorSystem(Behaviors.empty, "test-data-system")
     implicit val executionContext =
@@ -98,14 +57,14 @@ object Routing
         parameter("seed".optional) { seed => 
           get 
             complete(
-              getGaussianInt(mean, std, seed.map(i => i.toInt))
+              valueStreams.getGaussianInt(mean, std, seed.map(i => i.toInt))
             )
         }},
       path("api" / "gaussian" / "real" / LongNumber / LongNumber) { (mean, std) =>
         parameter("seed".optional) { seed => 
           get
             complete(
-              getGaussian(mean, std, seed.map(i => i.toInt))
+              valueStreams.getGaussian(mean, std, seed.map(i => i.toInt))
             )
       }}
       )

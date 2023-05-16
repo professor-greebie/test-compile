@@ -6,10 +6,11 @@ import scala.math.log
 import org.apache.commons.math3.distribution.ChiSquaredDistribution
 import org.apache.commons.math3.random.RandomGenerator
 import org.apache.commons.math3.random.RandomGeneratorFactory
+import spray.json.JsNumber
 
 trait Generator[T]:
   var seed: Option[Int]
-  def generate(): T
+  def generate(): JsNumber
 
 enum GeneratorType:
   case Gaussian, RandomDouble, TDist, ChiSquared
@@ -63,8 +64,9 @@ class GeneratorImpl(
   def createGaussianWithMeanAndStd(mean: Double, std: Double): Double =
     mean + createGaussian() * std
 
-  override def generate(): Double =
-    result
+  def getResult(): Double = result
+  override def generate(): JsNumber =
+    JsNumber(result)
 
 end GeneratorImpl
 
@@ -77,9 +79,9 @@ class GeneratorLong(
 
   def createInt(): Int = generator.random.nextInt()
 
-  override def generate(): Long = {
-    val doubleValue = generator.generate()
-    Math.round(doubleValue)
+  override def generate(): JsNumber = {
+    val doubleValue: Double = generator.getResult()
+    JsNumber(Math.round(doubleValue))
   }
 
 }

@@ -1,3 +1,5 @@
 package com.greebiestudios.test_data_generator.data
 
-case class NumberValue(value: Double)
+import spray.json.JsValue
+
+case class NumberValue(value: JsValue)
