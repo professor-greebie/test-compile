@@ -25,10 +25,11 @@ lazy val root = project
     scalaVersion := scala3Version,
 
     libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test,
+    libraryDependencies += "org.scala-lang" %% "toolkit" % "0.1.7",
     
     libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % AkkaVersion, 
-    libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % AkkaVersion,
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % AlpakkaKafkaVersion,
     libraryDependencies += "com.lightbend.akka" %% "akka-stream-alpakka-s3" % AlpakkaVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-http-xml" % AkkaHttpVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,
@@ -39,6 +40,7 @@ lazy val root = project
     libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % ScalaLoggingVersion,
     libraryDependencies += "ch.qos.logback" % "logback-classic" % LogbackVersion,
     libraryDependencies += "org.apache.commons" % "commons-math3" % ApacheCommonsMathVersion,
+    libraryDependencies += "com.lihaoyi" %% "requests" % "0.8.0"
     
   )
 

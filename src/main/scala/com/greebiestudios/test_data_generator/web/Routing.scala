@@ -64,6 +64,13 @@ object Routing
       system.executionContext
 
     lazy val route: Route = concat(
+      path ("api" / "municipalities" / "expenditures") {
+        get {
+          complete(
+            valueStreams.getMunicipalExpenditures()
+          )
+        }
+      },
       path("api" / "gaussian" / "whole" / LongNumber / LongNumber) {
         (mean, std) =>
           parameter("seed".optional) { seed =>

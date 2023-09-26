@@ -21,6 +21,13 @@ object ValueStreams extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSu
     source
   }
 
+  def getMunicipalExpenditures() : Source[NumberValue, Cancellable] = {
+    val municipalExpenditures: Source[NumberValue, Cancellable] = 
+      tickStream(() => JsString("Municipal Expenditures"))
+        .named("Municipal Expenditures")
+    municipalExpenditures
+  }
+
   def getGaussian(
       mean: Double,
       std: Double,
