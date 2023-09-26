@@ -7,6 +7,7 @@ val MariaDbDriverVersion = "3.1.4"
 val ApacheCommonsMathVersion = "3.6.1"
 val ScalaLoggingVersion = "3.9.4"
 val LogbackVersion = "1.2.10"
+resolvers += "Akka library repository".at("https://repo.akka.io/maven")
 
 lazy val root = project
   .in(file("."))
@@ -27,6 +28,7 @@ lazy val root = project
     
     libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % AkkaVersion, 
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % AkkaVersion,
     libraryDependencies += "com.lightbend.akka" %% "akka-stream-alpakka-s3" % AlpakkaVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-http-xml" % AkkaHttpVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,
