@@ -11,11 +11,12 @@ import org.apache.kafka.common.serialization.StringSerializer
 
 class Producers {
     val configFile = ConfigFactory.load("application.conf")
-    val config = configFile.getString("akka.kafka.producer")
+    val config = configFile.getConfig("akka.kafka.producer")
     val bootstrapServers = configFile.getString("akka.kafka.producer.bootstrap-servers")
 
-    //val producerSettings =
-    //   ProducerSettings(config, new StringSerializer, new StringSerializer).withBootstrapServers(bootstrapServers)
+    val producerSettings =
+       ProducerSettings(config, new StringSerializer, new StringSerializer).withBootstrapServers(bootstrapServers)
+    val producer = Producer.plainSink(producerSettings)
 
     //val oceanBuoy = Source(1 to 100).map(_.toString).runWith(Producer.plainSink(producerSettings))
     //val kafkaProducer: Future[org.apache.kafka.clients.producer.Producer[String, String]] = producerSettings.createKafkaProducer()

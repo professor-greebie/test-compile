@@ -33,10 +33,35 @@ import akka.actor.typed.ActorRef
 import com.greebiestudios.test_data_generator.data.NumberValue
 import com.greebiestudios.test_data_generator.data.Identity
 import akka.http.javadsl.model.ContentType.WithFixedCharset
+import com.greebiestudios.test_data_generator.data.Marshallers
+import akka.http.scaladsl.model.HttpRequest
+import akka.protobufv3.internal.Api
+import com.greebiestudios.test_data_generator.data.ApiSourceInformation
+import akka.http.scaladsl.marshalling.ToResponseMarshallable
 
 object Routing
     extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
     with spray.json.DefaultJsonProtocol {
+
+  implicit val ckanOrganizationFormat
+      : RootJsonFormat[Marshallers.CkanOrganization] = jsonFormat7(
+    Marshallers.CkanOrganization.apply
+  )
+  
+  implicit val ckanResourceFormat: RootJsonFormat[Marshallers.CkanResource] =
+    jsonFormat16(
+      Marshallers.CkanResource.apply
+    )
+
+  implicit val ckanResultFormat: RootJsonFormat[Marshallers.CkanResult] =
+    jsonFormat9(
+      Marshallers.CkanResult.apply
+    )
+  implicit val ckanDataFormat: RootJsonFormat[Marshallers.CkanData] =
+    jsonFormat3(
+      
+      Marshallers.CkanData.apply
+    )
 
   val newLine = ByteString("\n")
 
@@ -50,7 +75,7 @@ object Routing
         .withFramingRenderer(
           Flow[ByteString].map(byteString => byteString ++ newLine)
         )
-
+    /// values for number streams
     implicit val numberValueFormat: RootJsonFormat[NumberValue] = jsonFormat1(
       NumberValue.apply
     )
@@ -64,7 +89,12 @@ object Routing
       system.executionContext
 
     lazy val route: Route = concat(
-      path ("api" / "municipalities" / "expenditures") {
+      path("api" / "dev" / "test_output") {
+        get {
+          complete(Source.single("Test"))
+        }
+      },
+      path("api" / "municipalities" / "expenditures") {
         get {
           complete(
             valueStreams.getMunicipalExpenditures()
