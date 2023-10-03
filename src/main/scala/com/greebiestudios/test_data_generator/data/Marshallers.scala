@@ -57,5 +57,20 @@ object Marshallers extends SprayJsonSupport {
         resourceId: String,
         payload: String) extends CkanDataFormat
 
+    final case class CkanDataset (
+        institution: String,
+        sourceUrl: String,
+        resourceId: String,
+        payload: String) extends CkanDataFormat
+
+    final case class UftCkanProduct(
+        service: String,
+        activity: String, 
+        expenseRevenue: String,
+        categoryName: String,
+        subCategoryName: String,
+        commitmentItem: String,
+        amount: String
+    )
     }
 

@@ -7,6 +7,10 @@ import akka.protobufv3.internal.Api
 
 object App {
   @main def launch: Unit =
+    ApiSourceInformation()
+      .collectDataIntoKafkaResource(
+        ApiSourceInformation().torontoBaseUrl, 
+        ApiSourceInformation().packageList(0)
+      )
     Routing()
-    ApiSourceInformation().collectDataIntoKafkaResource(ApiSourceInformation().torontoBaseUrl, ApiSourceInformation().packageList(0))
   }

@@ -7,6 +7,8 @@ val MariaDbDriverVersion = "3.1.4"
 val ApacheCommonsMathVersion = "3.6.1"
 val ScalaLoggingVersion = "3.9.4"
 val LogbackVersion = "1.2.10"
+val PoiVersion = "5.2.4"
+
 resolvers += "Akka library repository".at("https://repo.akka.io/maven")
 
 lazy val root = project
@@ -31,6 +33,7 @@ lazy val root = project
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % AkkaVersion, 
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % AlpakkaKafkaVersion,
     libraryDependencies += "com.lightbend.akka" %% "akka-stream-alpakka-s3" % AlpakkaVersion,
+    libraryDependencies += "com.lightbend.akka" %% "akka-stream-alpakka-csv" % AlpakkaVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-http-xml" % AkkaHttpVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion % Test,
@@ -40,7 +43,9 @@ lazy val root = project
     libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % ScalaLoggingVersion,
     libraryDependencies += "ch.qos.logback" % "logback-classic" % LogbackVersion,
     libraryDependencies += "org.apache.commons" % "commons-math3" % ApacheCommonsMathVersion,
-    libraryDependencies += "com.lihaoyi" %% "requests" % "0.8.0"
+    libraryDependencies += "com.lihaoyi" %% "requests" % "0.8.0",
+    libraryDependencies += "org.apache.poi" % "poi" % PoiVersion,
+    libraryDependencies += "org.apache.poi" % "poi-ooxml" % PoiVersion,
     
   )
 
