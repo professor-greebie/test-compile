@@ -38,37 +38,20 @@ import akka.http.scaladsl.model.HttpRequest
 import akka.protobufv3.internal.Api
 import com.greebiestudios.test_data_generator.data.ApiSourceInformation
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
+import com.greebiestudios.test_data_generator.actor.RootActorSystem
+import com.greebiestudios.test_data_generator.actor.RunSystem.SystemRunning
+import com.greebiestudios.test_data_generator.actor.RunSystem
 
 object Routing
     extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
     with spray.json.DefaultJsonProtocol {
-
-  implicit val ckanOrganizationFormat
-      : RootJsonFormat[Marshallers.CkanOrganization] = jsonFormat7(
-    Marshallers.CkanOrganization.apply
-  )
-  
-  implicit val ckanResourceFormat: RootJsonFormat[Marshallers.CkanResource] =
-    jsonFormat16(
-      Marshallers.CkanResource.apply
-    )
-
-  implicit val ckanResultFormat: RootJsonFormat[Marshallers.CkanResult] =
-    jsonFormat9(
-      Marshallers.CkanResult.apply
-    )
-  implicit val ckanDataFormat: RootJsonFormat[Marshallers.CkanData] =
-    jsonFormat3(
-      
-      Marshallers.CkanData.apply
-    )
 
   val newLine = ByteString("\n")
 
   val valueStreams = ValueStreams
   val nameStreams = NameStreams
 
-  def apply(): Unit = {
+  def apply(name: String, port: Int): Unit = {
     implicit val jsonStreamingSupport: JsonEntityStreamingSupport =
       EntityStreamingSupport
         .json()
@@ -83,8 +66,7 @@ object Routing
       Identity.apply
     )
 
-    implicit val system: ActorSystem[Any] =
-      ActorSystem(Behaviors.empty, "test-data-system")
+    implicit val system: ActorSystem[SystemRunning] = RootActorSystem()
     implicit val executionContext =
       system.executionContext
 
@@ -93,14 +75,14 @@ object Routing
         get {
           complete(Source.single("Test"))
         }
-      },
+      }, /**
       path("api" / "municipalities" / "expenditures") {
         get {
           complete(
             valueStreams.getMunicipalExpenditures()
           )
         }
-      },
+      }, **/
       path("api" / "gaussian" / "whole" / LongNumber / LongNumber) {
         (mean, std) =>
           parameter("seed".optional) { seed =>
@@ -176,14 +158,14 @@ object Routing
       }
     )
 
-    val bindingFuture = Http().newServerAt("0.0.0.0", 8099).bind(route)
+    val bindingFuture = Http().newServerAt("0.0.0.0", port).bind(route)
     println(
-      s"Server now online. Please navigate to http://localhost:8099/hello\nPress RETURN to stop..."
+      s"Server called $name now online. Please navigate to http://localhost:8099/api\nPress RETURN to stop..."
     )
     StdIn.readLine()
     bindingFuture
       .flatMap(_.unbind())
-      .onComplete(_ => system.terminate())
+      .onComplete(_ => system ! RunSystem.StopSystem("User stopped server."))
   }
 
 }

@@ -8,7 +8,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import akka.actor.typed.scaladsl.Behaviors
 import scala.concurrent.Future
-import spray.json.RootJsonFormat
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.scaladsl.{Sink, Source}
@@ -45,6 +45,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.ss.usermodel.Sheet
 import akka.http.scaladsl.marshalling.Marshal
+import com.greebiestudios.test_data_generator.data.CkanDataCaseClasses
 
 class ApiSourceInformation
     extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
@@ -60,9 +61,8 @@ class ApiSourceInformation
   val quoteChar: Byte = DoubleQuote
   val escapeChar: Byte = Backslash
 
-  
-
   // Sources
+
 
   // Flows
 
@@ -72,10 +72,12 @@ class ApiSourceInformation
   val getCKANResourceFlow: Flow[Marshallers.CkanData, CkanResource, NotUsed] =
     Flow[Marshallers.CkanData]
       .mapConcat(result => result.result.resources)
-      .filter(resource => resource.state == "active" &&
-       supportedFormats.contains(resource.format) && 
-       resource.url != null &&
-      !resource.name.endsWith("readme.xls"))
+      .filter(resource =>
+        resource.state == "active" &&
+          supportedFormats.contains(resource.format) &&
+          resource.url != null &&
+          !resource.name.endsWith("readme.xls")
+      )
 
   val processRecordFlow
       : Flow[Map[String, String], ProducerRecord[String, String], NotUsed] =
@@ -83,11 +85,15 @@ class ApiSourceInformation
       .filter(filter => filter.nonEmpty)
       .map(item => ProducerRecord("city_budget_1", item.toString))
 
-  val processRecordFlowHeader: Flow[Seq[String], ProducerRecord[String, String], NotUsed] = Flow[Seq[String]]
-    .map(item => ProducerRecord("city_budget_1", item.toString))
+  val processRecordFlowHeader
+      : Flow[Seq[String], ProducerRecord[String, String], NotUsed] =
+    Flow[Seq[String]]
+      .map(item => ProducerRecord("city_budget_1", item.toString))
 
-  val processRecordFlowCells: Flow[Seq[String], ProducerRecord[String, String], NotUsed] = Flow[Seq[String]]
-    .map(item => ProducerRecord("city_budget_1", item.toString))
+  val processRecordFlowCells
+      : Flow[Seq[String], ProducerRecord[String, String], NotUsed] =
+    Flow[Seq[String]]
+      .map(item => ProducerRecord("city_budget_1", item.toString))
 
   val xlsFlowTorontoHeader: Flow[InputStream, Seq[String], NotUsed] =
     Flow[InputStream].map(bs => {
@@ -101,7 +107,7 @@ class ApiSourceInformation
           .map(cell =>
             Option(formatter.formatCellValue(cell)) match {
               case Some("")    => "none"
-              case Some(value) => value   
+              case Some(value) => value
               case None        => "none"
             }
           )
@@ -112,33 +118,34 @@ class ApiSourceInformation
       }
     })
 
-  val xlsFlowTorontoCells: Flow[InputStream, Seq[String], NotUsed] = Flow[InputStream].mapConcat(bs => {
-    val workbook: Workbook = WorkbookFactory.create(bs)
-    val worksheet: Sheet = workbook.getSheetAt(0)
-    if (worksheet.getLastRowNum() > 0) {
-      val headerRow = worksheet.getRow(0)
-      val headerCells = headerRow.cellIterator()
-      val formatter = new DataFormatter();
-      val dataRows = worksheet
-        .rowIterator()
-        .asScala
-        .drop(1)
-        .map(row => {
-          val cells = row.cellIterator()
-          val data = cells.asScala.map(cell => {
-            Option(formatter.formatCellValue(cell)) match {
-              case Some(value) => value
-              case None        => "none"
-            }
+  val xlsFlowTorontoCells: Flow[InputStream, Seq[String], NotUsed] =
+    Flow[InputStream].mapConcat(bs => {
+      val workbook: Workbook = WorkbookFactory.create(bs)
+      val worksheet: Sheet = workbook.getSheetAt(0)
+      if (worksheet.getLastRowNum() > 0) {
+        val headerRow = worksheet.getRow(0)
+        val headerCells = headerRow.cellIterator()
+        val formatter = new DataFormatter();
+        val dataRows = worksheet
+          .rowIterator()
+          .asScala
+          .drop(1)
+          .map(row => {
+            val cells = row.cellIterator()
+            val data = cells.asScala.map(cell => {
+              Option(formatter.formatCellValue(cell)) match {
+                case Some(value) => value
+                case None        => "none"
+              }
+            })
+            data.toSeq
           })
-          data.toSeq
-        })
-      dataRows.toSeq
-    } else {
-      Seq(Seq("none"))
-    }
-  
-  })
+        dataRows.toSeq
+      } else {
+        Seq(Seq("none"))
+      }
+
+    })
 
   val xlsFlowToronto: Flow[InputStream, Map[String, String], NotUsed] =
     Flow[InputStream].mapConcat(bs => {
@@ -151,10 +158,11 @@ class ApiSourceInformation
         val headers = headerCells.asScala
           .map(cell =>
             Option(formatter.formatCellValue(cell)) match {
-              case Some(value) => value   
+              case Some(value) => value
               case None        => "none"
             }
-          ).toSeq
+          )
+          .toSeq
         val dataRows = worksheet
           .rowIterator()
           .asScala
@@ -211,29 +219,6 @@ class ApiSourceInformation
 
   
 
-  val ckanApiBoilerplate = "/api/3/action/package_show"
-  val torontoBaseUrl = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
-  val packageList = Seq(
-    "budget-operating-budget-program-summary-by-expenditure-category"
-  )
-
-  def getResources(
-      url: String,
-      sourceId: String
-  ): Source[Marshallers.CkanData, NotUsed] = {
-    import ckanJsonFormats._
-    val params = Map("id" -> sourceId)
-    val uri: Uri = Uri(url + ckanApiBoilerplate).withQuery(Uri.Query(params))
-    val http = Http(system)
-    val request = HttpRequest(uri = uri)
-    val response = http
-      .singleRequest(request)
-      .flatMap(resp => Unmarshal(resp.entity).to[Marshallers.CkanData])
-    Source.future[Marshallers.CkanData](response)
-  }
-
-  
-
   def getResource(url: String) = {
     Http(system)
       .singleRequest(HttpRequest(uri = url))
@@ -241,14 +226,17 @@ class ApiSourceInformation
   }
 
   def collectDataIntoKafkaResource(url: String, sourceId: String) = {
-    import ckanJsonFormats._
     val http = Http(system)
-    val resource: Source[CkanResource, NotUsed] = getResources(url, sourceId)
+    val resource: Source[CkanResource, NotUsed] = CkanDataCaseClasses().getCkanResources(url, sourceId)
       .via(getCKANResourceFlow)
     val is = resource
       .map(item => item.url)
       .log("Info", item => item.toString)
-      .filter(url => (url.endsWith(".xlsx") || url.endsWith(".xls")) && !url.endsWith("readme.xls"))
+      .filter(url =>
+        (url.endsWith(".xlsx") || url.endsWith(".xls")) && !url.endsWith(
+          "readme.xls"
+        )
+      )
       .mapAsync(1)(simple => getResource(simple))
       .map(bs => new java.io.ByteArrayInputStream(bs.toArray))
       /** .map(is => { val worksheet = WorkbookFactory.create(is).getSheetAt(0)
@@ -267,34 +255,12 @@ class ApiSourceInformation
         */
       .via(xlsFlowToronto)
       .via(processRecordFlow)
-      //.map(item => ProducerRecord("city_budget_1", item.mkString))
+      // .map(item => ProducerRecord("city_budget_1", item.mkString))
       .runWith(Producer.plainSink(producerSettings))
     is
 
   }
 
-  object ckanJsonFormats {
-    implicit val ckanOrganizationFormat
-        : RootJsonFormat[Marshallers.CkanOrganization] = jsonFormat7(
-      Marshallers.CkanOrganization.apply
-    )
-    implicit val ckanResourceFormat: RootJsonFormat[Marshallers.CkanResource] =
-      jsonFormat16(
-        Marshallers.CkanResource.apply
-      )
-    implicit val ckanResultFormat: RootJsonFormat[Marshallers.CkanResult] =
-      jsonFormat9(
-        Marshallers.CkanResult.apply
-      )
-    implicit val ckanDataFormat: RootJsonFormat[Marshallers.CkanData] =
-      jsonFormat3(
-        Marshallers.CkanData.apply
-      )
-    implicit val ckanProductFormat: RootJsonFormat[Marshallers.CkanProduct] =
-      jsonFormat3(Marshallers.CkanProduct.apply)
-    implicit val ckanDatasetFormat: RootJsonFormat[Marshallers.CkanDataset] =
-      jsonFormat4(Marshallers.CkanDataset.apply)
-
-  }
+  
 
 }

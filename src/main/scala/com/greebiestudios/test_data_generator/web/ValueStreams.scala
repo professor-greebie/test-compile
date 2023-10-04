@@ -32,6 +32,7 @@ object ValueStreams
     source
   }
 
+  /*
   def getMunicipalExpenditures(): Source[Marshallers.CkanData, NotUsed] = {
     val municipalExpenditures: Source[Marshallers.CkanData, NotUsed] =
       ApiSourceInformation().getResources(
@@ -39,7 +40,7 @@ object ValueStreams
         ApiSourceInformation().packageList(0)
       )
     municipalExpenditures
-  }
+  } */
 
   def getGaussian(
       mean: Double,

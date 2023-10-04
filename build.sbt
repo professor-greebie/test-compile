@@ -30,7 +30,7 @@ lazy val root = project
     libraryDependencies += "org.scala-lang" %% "toolkit" % "0.1.7",
     
     libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
-    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % AkkaVersion, 
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream-typed" % AkkaVersion, 
     libraryDependencies += "com.typesafe.akka" %% "akka-stream-kafka" % AlpakkaKafkaVersion,
     libraryDependencies += "com.lightbend.akka" %% "akka-stream-alpakka-s3" % AlpakkaVersion,
     libraryDependencies += "com.lightbend.akka" %% "akka-stream-alpakka-csv" % AlpakkaVersion,

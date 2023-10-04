@@ -1,8 +1,6 @@
 package com.greebiestudios.test_data_generator.data
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import spray.json._
-import DefaultJsonProtocol._
 
 object Marshallers extends SprayJsonSupport {
 
