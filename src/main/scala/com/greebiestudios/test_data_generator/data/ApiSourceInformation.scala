@@ -60,6 +60,11 @@ class ApiSourceInformation
   val delimiter: Byte = Comma
   val quoteChar: Byte = DoubleQuote
   val escapeChar: Byte = Backslash
+  val producerSettings =
+    ProducerSettings(config, new StringSerializer, new StringSerializer)
+      .withBootstrapServers(bootstrapServers)
+
+  val kafkaSink = Producer.plainSink(producerSettings)
 
   // Sources
 
@@ -204,9 +209,6 @@ class ApiSourceInformation
     }
   }
 
-  val producerSettings =
-    ProducerSettings(config, new StringSerializer, new StringSerializer)
-      .withBootstrapServers(bootstrapServers)
   val testSettings =
     ProducerSettings(config, new StringSerializer, new StringSerializer)
       .withBootstrapServers(bootstrapServers)
@@ -256,7 +258,7 @@ class ApiSourceInformation
       .via(xlsFlowToronto)
       .via(processRecordFlow)
       // .map(item => ProducerRecord("city_budget_1", item.mkString))
-      .runWith(Producer.plainSink(producerSettings))
+      .runWith(kafkaSink)
     is
 
   }

@@ -28,7 +28,7 @@ object RunSystem {
                 Behaviors.stopped
             case GetData() => 
                 context.log.info("GetData received")
-                getFinancialData ! GetFinancialData.GetFinancialData(DataSource.CKAN, "url")
+                getFinancialData ! GetFinancialData.GetFinancialData(DataSource.SODA, "edmonton")
                 Behaviors.same
             case _ => 
                 context.log.info("Unknown message received")

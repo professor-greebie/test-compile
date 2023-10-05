@@ -3,7 +3,6 @@ package com.greebiestudios.test_data_generator.actor
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.ActorSystem
 import akka.actor.typed.Behavior
-import akka.actor.Actor
 import akka.NotUsed
 
 object RootActorSystem {
@@ -15,7 +14,9 @@ object RootActorSystem {
     }
 
     def startServer(): Unit = {
-        system ! RunSystem.StartSystem()
+        system ! RunSystem.GetData()
+        // system ! RunSystem.StartSystem()
+        
     }
 
     /// TODO: Add logic to stop server without stopping system

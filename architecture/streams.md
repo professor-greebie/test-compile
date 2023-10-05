@@ -1,14 +1,21 @@
-Stream Flow Architecture
+## Stream Flow Architecture
+
+Hello here is a markdown document
 
 ```mermaid
 
 flowchart LR
   ActorSystem
-  ActorCKAN
+  NewActorCKAN
   ActorARCGIS
   ActorSODA
 
+  ActorSystem -- loves --> ActorCKAN --> NewActorCKAN
+
 ```
+
+## This is a markdown document
+
 
 ```mermaid
 
@@ -30,7 +37,7 @@ flowchart LR
 
   KafkaProducerSink --> Kafka
   Kafka
-  CKANSource --> CKANCleaningFLOW
+  CKANSource -- loves --> CKANCleaningFLOW
   SODASource --> SODACleaningFLOW
   ARCGISSource --> ARCGISCleaningFLOW
   CKANCleaningFLOW --> XSLParseFLOW

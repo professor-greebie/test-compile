@@ -3,6 +3,7 @@ import com.greebiestudios.test_data_generator.data.DataSource
 import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 import org.checkerframework.checker.units.qual.s
+import com.greebiestudios.test_data_generator.data.SODADataCaseClasses
 
 object GetFinancialData {
 
@@ -17,6 +18,7 @@ object GetFinancialData {
       Behaviors.receiveMessage {
         case GetFinancialData(source, url) =>
           context.log.info("GetFinancialData received")
+          SODADataCaseClasses().getEdmontonBudgetData()
           // TODO: Get data from source using url
           Behaviors.same
         case GetHousingData(source, url) =>
