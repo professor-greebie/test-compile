@@ -16,11 +16,13 @@ object GetFinancialData {
   def apply(): Behavior[GetFinancialAction] = {
     Behaviors.setup { context =>
       Behaviors.receiveMessage {
-        case GetFinancialData(source, url) =>
+        case GetFinancialData(source, url) => 
           context.log.info("GetFinancialData received")
-          SODADataCaseClasses().getEdmontonBudgetData()
+          val soda = new SODADataCaseClasses()
+          soda.getAllBudgetData()
+          Behaviors.ignore
           // TODO: Get data from source using url
-          Behaviors.same
+          
         case GetHousingData(source, url) =>
           context.log.info("GetHousingData received")
           // TODO: Get data from source using url

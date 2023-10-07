@@ -6,33 +6,52 @@ import com.greebiestudios.test_data_generator.web.Routing
 import akka.NotUsed
 import com.greebiestudios.test_data_generator.data.Marshallers.CkanDataFormat
 import com.greebiestudios.test_data_generator.data.DataSource
+import concurrent.duration.DurationInt
+import akka.actor.typed.ActorRef
+
 
 object RunSystem {
     trait SystemRunning
     final case class StartSystem() extends SystemRunning
     final case class StopSystem(reason: String) extends SystemRunning
     final case class GetData() extends SystemRunning
+    final case class GetTestFeature() extends SystemRunning
 
     def apply(): Behavior[SystemRunning] = Behaviors.setup{ context =>
         context.log.info("RootActorSystem started")
         val routing = context.spawn(StartWebServer(), "WebServer")
         val getFinancialData = context.spawn(GetFinancialData(), "GetFinancialData")
-        Behaviors.receiveMessage{ 
+        val testFeatures: ActorRef[TestFeatureSystem.TestFeatureSystemRunning] = context.spawn(TestFeatureSystem(), "TestFeatureSystem")
+        
+          Behaviors.receiveMessage{ 
             case StartSystem() => 
                 context.log.info("StartSystem received")
-                routing ! StartWebServer.StartServer("Math API", 8099)
-                Behaviors.same
+                /**
+                Behaviors.withTimers{ timers =>
+                  timers.startTimerWithFixedDelay(GetData(), 1.second, 10.minutes)
+                  Behaviors.same
+                } **/
+                Behaviors.withTimers{ timers =>
+                  timers.startTimerWithFixedDelay(GetTestFeature(), 1.second, 10.minutes)
+                  Behaviors.same
+                }
+                //routing ! StartWebServer.StartServer("Math API", 8099)
             case StopSystem(reason) => 
                 context.log.info("StopSystem received")
                 routing ! StartWebServer.StopServer(reason)
                 Behaviors.stopped
             case GetData() => 
                 context.log.info("GetData received")
-                getFinancialData ! GetFinancialData.GetFinancialData(DataSource.SODA, "edmonton")
+                getFinancialData ! GetFinancialData.GetFinancialData(DataSource.CKAN, "https://data.edmonton.ca/resource/qycq-4ckj.json")
+                Behaviors.same
+            case GetTestFeature() => 
+                context.log.info("GetTestFeature received")            
+                testFeatures ! TestFeatureSystem.StartTestSystemOCRTest()
                 Behaviors.same
             case _ => 
                 context.log.info("Unknown message received")
                 Behaviors.same
-        } 
-    }}
+        }
+    }
+}
 

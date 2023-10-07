@@ -14,8 +14,8 @@ object RootActorSystem {
     }
 
     def startServer(): Unit = {
-        system ! RunSystem.GetData()
-        // system ! RunSystem.StartSystem()
+        system ! RunSystem.StartSystem()
+        //system ! RunSystem.GetTestFeature()
         
     }
 

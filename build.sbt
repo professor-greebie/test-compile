@@ -6,7 +6,7 @@ val AkkaHttpVersion = "10.5.1"
 val MariaDbDriverVersion = "3.1.4"
 val ApacheCommonsMathVersion = "3.6.1"
 val ScalaLoggingVersion = "3.9.4"
-val LogbackVersion = "1.2.10"
+val LogbackVersion = "1.3.5"
 val PoiVersion = "5.2.4"
 
 resolvers += "Akka library repository".at("https://repo.akka.io/maven")
@@ -28,6 +28,7 @@ lazy val root = project
 
     libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test,
     libraryDependencies += "org.scala-lang" %% "toolkit" % "0.1.7",
+    libraryDependencies += "net.sourceforge.tess4j" % "tess4j" % "5.8.0",
     
     libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
@@ -47,6 +48,7 @@ lazy val root = project
     libraryDependencies += "com.lihaoyi" %% "requests" % "0.8.0",
     libraryDependencies += "org.apache.poi" % "poi" % PoiVersion,
     libraryDependencies += "org.apache.poi" % "poi-ooxml" % PoiVersion,
+    libraryDependencies += "org.apache.pdfbox" % "pdfbox" % "2.0.29",
     
   )
 

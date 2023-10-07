@@ -21,7 +21,7 @@
 |Calgary | https://data.calgary.ca | Socrata |
 |Ottawa | https://open.ottawa.ca | ArcGIS |
 |Saint John | https://catalogue-saintjohn.opendata.arcgis.com | ArcGIS |
-|
+
 
 
 

@@ -84,11 +84,11 @@ class ApiSourceInformation
           !resource.name.endsWith("readme.xls")
       )
 
-  val processRecordFlow
+  def processRecordFlow(topic: String)
       : Flow[Map[String, String], ProducerRecord[String, String], NotUsed] =
     Flow[Map[String, String]]
       .filter(filter => filter.nonEmpty)
-      .map(item => ProducerRecord("city_budget_1", item.toString))
+      .map(item => ProducerRecord(topic, item.toString))
 
   val processRecordFlowHeader
       : Flow[Seq[String], ProducerRecord[String, String], NotUsed] =
@@ -256,7 +256,7 @@ class ApiSourceInformation
         * Seq(Map("none" -> "none")) } })
         */
       .via(xlsFlowToronto)
-      .via(processRecordFlow)
+      .via(processRecordFlow("city_budget_1"))
       // .map(item => ProducerRecord("city_budget_1", item.mkString))
       .runWith(kafkaSink)
     is
