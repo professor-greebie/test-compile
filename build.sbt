@@ -29,6 +29,7 @@ lazy val root = project
     libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test,
     libraryDependencies += "org.scala-lang" %% "toolkit" % "0.1.7",
     libraryDependencies += "net.sourceforge.tess4j" % "tess4j" % "5.8.0",
+    libraryDependencies += "com.softwaremill.sttp.tapir" %% "tapir-akka-http-server" % "1.8.1",
     
     libraryDependencies += "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
     libraryDependencies += "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
