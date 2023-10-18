@@ -25,7 +25,8 @@ class CkanDataCaseClasses
   val ckanApiBoilerplate = "/api/3/action/package_show"
   val torontoBaseUrl = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
   val packageList = Seq(
-    "budget-operating-budget-program-summary-by-expenditure-category"
+    "budget-operating-budget-program-summary-by-expenditure-category", 
+    "registered-residential-non-residential-condomimiums",
   )
 
   def getCkanResources(
@@ -134,5 +135,17 @@ class CkanDataCaseClasses
       subCategoryName: String,
       commitmentItem: String,
       amount: String
+  )
+
+  final case class TorontoHousingCkanProduct(
+      streetNumber: String,
+      streetName: String,
+      condoPlanNumber: String,
+      dateOfRegistation: String,
+      bachelor: String,
+      oneBedroom: String,
+      twoBedroom: String,
+      threeBedroom: String,
+      totalUnits: String
   )
 }

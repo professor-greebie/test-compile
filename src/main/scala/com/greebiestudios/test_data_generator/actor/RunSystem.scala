@@ -32,7 +32,7 @@ object RunSystem {
                   Behaviors.same
                 } **/
                 Behaviors.withTimers{ timers =>
-                  timers.startTimerWithFixedDelay(GetTestFeature(), 1.second, 10.minutes)
+                  timers.startTimerWithFixedDelay(GetData(), 1.second, 10.minutes)
                   Behaviors.same
                 }
                 //routing ! StartWebServer.StartServer("Math API", 8099)
@@ -42,7 +42,7 @@ object RunSystem {
                 Behaviors.stopped
             case GetData() => 
                 context.log.info("GetData received")
-                getFinancialData ! GetFinancialData.GetFinancialData(DataSource.CKAN, "https://data.edmonton.ca/resource/qycq-4ckj.json")
+                getFinancialData ! GetFinancialData.GetHousingData(DataSource.CSV, "")
                 Behaviors.same
             case GetTestFeature() => 
                 context.log.info("GetTestFeature received")            

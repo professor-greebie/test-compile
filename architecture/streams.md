@@ -32,15 +32,23 @@ flowchart LR
   XSLXParseFLOW
   CSVParseFLOW
   JSONParseFLOW
+  UnZipFLOW
+  style UnZipFLOW fill:#999,stroke:#733,stroke-width:6px,color:#000
 
 
   Kafka[(Kafka)]
 
   KafkaProducerSink --> Kafka
   Kafka
-  CKANSource -- loves --> CKANCleaningFLOW
+  CKANSource --> CKANCleaningFLOW
   SODASource --> SODACleaningFLOW
   ARCGISSource --> ARCGISCleaningFLOW
+  UnZipFLOW --> SODACleaningFLOW
+  UnZipFLOW --> CKANCleaningFLOW
+  UnZipFLOW --> ARCGISCleaningFLOW
+  CKANSource --> UnZipFLOW
+  SODASource --> UnZipFLOW
+  ARCGISSource --> UnZipFLOW
   CKANCleaningFLOW --> XSLParseFLOW
   CKANCleaningFLOW --> XSLXParseFLOW
   CKANCleaningFLOW --> JSONParseFLOW

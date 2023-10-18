@@ -1,5 +1,10 @@
 package com.greebiestudios.test_data_generator.data
 
+case class DataInput(
+    url: String,
+    resource: Seq[String],
+)
+
 trait DataOutput
 case class DefaultDataOutput(
     key: String,

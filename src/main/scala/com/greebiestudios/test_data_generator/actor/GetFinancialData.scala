@@ -4,6 +4,8 @@ import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.Behaviors
 import org.checkerframework.checker.units.qual.s
 import com.greebiestudios.test_data_generator.data.SODADataCaseClasses
+import com.greebiestudios.test_data_generator.client.FederalDataFiles
+import com.greebiestudios.test_data_generator.data.FederalGovernmentData
 
 object GetFinancialData {
 
@@ -25,8 +27,13 @@ object GetFinancialData {
           
         case GetHousingData(source, url) =>
           context.log.info("GetHousingData received")
+          val data = FederalDataFiles.vacancyRates
+          val feds = new FederalGovernmentData(using data)
+          context.log.info(feds.getDataSource().url)
+          feds.federalDataSource
+
           // TODO: Get data from source using url
-          Behaviors.same
+          Behaviors.empty
       }
     }
   }

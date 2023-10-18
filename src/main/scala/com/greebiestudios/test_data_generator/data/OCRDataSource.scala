@@ -13,9 +13,6 @@ import scala.concurrent.ExecutionContext
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.ByteArrayInputStream
-import net.sourceforge.tess4j.util.ImageHelper
-import com.recognition.software.jdeskew.ImageDeskew
-import com.greebiestudios.test_data_generator.ocr.OCR
 import akka.stream.scaladsl.JsonFraming
 import akka.protobufv3.internal.Api
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -28,7 +25,7 @@ import ch.qos.logback.classic.Logger
 import os.exists
 
 
-class OCRDataSource extends OCR {
+class OCRDataSource {
     implicit val system: akka.actor.typed.ActorSystem[RunSystem.SystemRunning] =
     RootActorSystem()
     implicit val ec: ExecutionContext = system.executionContext
@@ -40,7 +37,7 @@ class OCRDataSource extends OCR {
     val calgaryBaseUrl = "https://www.calgary.ca/content/dam/www/cfod/finance/documents/plans-budgets-and-financial-reports/annual-reports/"
     val calgaryAnnual2021   = "annual-report-2021.pdf"
 
-    val pdfToTextFlow: Flow[ByteString, OcrString, NotUsed] = exists()
+    val pdfToTextFlow: Flow[ByteString, OcrString, NotUsed] = 
         Flow[ByteString]
             .map(arr => new ByteArrayInputStream(arr.toArray))
             .log("Input Received")
